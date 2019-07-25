@@ -30,9 +30,8 @@ public class TransactionService {
 	
 	
 
-	public String makeTransaction(TransactionDto transactionDto,Account accountDetails) {
-		Transaction transaction;
-		String transactionStatus = null;
+	public Transaction makeTransaction(TransactionDto transactionDto,Account accountDetails) throws ResourceNotFoundException {
+		Transaction transaction = null;
 		
 		// deposit
 		if(transactionDto.getTransactionType().equalsIgnoreCase("CR")) {
@@ -42,18 +41,17 @@ public class TransactionService {
 			transaction.setTransactionDate(LocalDate.now());
 			transaction.setCustomerId(accountDetails.getCustomerId());
 			transaction.setBalance(updatedBalance);
+			transaction.setTransactionType("CR");
 			transactionRepository.save(transaction);
 			
 			accountDetails.setBalance(updatedBalance);
 			accountRepository.save(accountDetails);	
-			transactionStatus="Your transaction success : amount deposited";
 		}
 		// withdraw
 		if(transactionDto.getTransactionType().equalsIgnoreCase("DR")) {			
 		
 			if(accountDetails.getBalance()<transactionDto.getTransactionAount()) {
-					System.out.println("insufficient balance for withdraw");
-					transactionStatus="Sorry, You dont have insufficient balance for transaction";
+					throw new ResourceNotFoundException("Sorry, Your dont have sufficient balance for transaction!");
 				}else {
 					transaction=new Transaction();
 					BeanUtils.copyProperties(transactionDto, transaction);
@@ -61,18 +59,18 @@ public class TransactionService {
 					transaction.setTransactionDate(LocalDate.now());
 					transaction.setCustomerId(accountDetails.getCustomerId());
 					transaction.setBalance(updatedBalance);
+					transaction.setTransactionType("DR");
 					transactionRepository.save(transaction);
 					
 					accountDetails.setBalance(updatedBalance);
 					accountRepository.save(accountDetails);
-					transactionStatus="Your transaction success : amount credited";
 				}
 				
 		}
 		
 		
 		
-		return transactionStatus;
+		return transaction;
 		
 		
 	}

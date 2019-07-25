@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.hcl.bankingApplication.dto.AccountTransactionDto;
 import com.hcl.bankingApplication.dto.TransactionDto;
 import com.hcl.bankingApplication.entity.Account;
+import com.hcl.bankingApplication.entity.Transaction;
 import com.hcl.bankingApplication.exception.ResourceNotFoundException;
 import com.hcl.bankingApplication.service.TransactionService;
 @CrossOrigin
@@ -33,20 +34,22 @@ public class AccountController {
 	}
 	
 	@PostMapping("/transaction")
-	public String makeTransaction(@Valid @RequestBody TransactionDto transaction) throws ResourceNotFoundException {
-		String transDetails=null;
+	public ResponseEntity<Transaction> makeTransaction(@Valid @RequestBody TransactionDto transaction) throws ResourceNotFoundException {
+		Transaction transDetails=null;
 		Account accountDetails= transactionService.validateCustomerDetails(transaction.getCustomerId());
 		
 				
 		if(ObjectUtils.isEmpty(accountDetails)) {
-			System.out.println("User Account is not created...");
-			
-		}else {
+			throw new ResourceNotFoundException("User Account is not created");			
+		}else if((transaction.getTransactionType().equalsIgnoreCase("CR")) ||(transaction.getTransactionType().equalsIgnoreCase("DR"))){
 			
 			transDetails=transactionService.makeTransaction(transaction,accountDetails);
 			
+		}else {
+			throw new ResourceNotFoundException("Please enter correct transaction type i.e. CR or DR");
 		}
-		return transDetails;
+		
+		return new ResponseEntity<>(transDetails,HttpStatus.OK);
 		
 	}
 
