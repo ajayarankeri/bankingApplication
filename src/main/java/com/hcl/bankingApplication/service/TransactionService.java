@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,12 +17,15 @@ import com.hcl.bankingApplication.entity.Customer;
 import com.hcl.bankingApplication.entity.Transaction;
 import com.hcl.bankingApplication.exception.ResourceNotFoundException;
 import com.hcl.bankingApplication.repository.AccountRepository;
-import com.hcl.bankingApplication.repository.CustomerReposistory;
+import com.hcl.bankingApplication.repository.CustomerRepository;
 import com.hcl.bankingApplication.repository.TransactionRepository;
 
 
 @Service
 public class TransactionService {
+	
+	static Logger log = LoggerFactory.getLogger(TransactionService.class);
+	
 	@Autowired
 	TransactionRepository transactionRepository;
 	
@@ -28,13 +33,12 @@ public class TransactionService {
 	AccountRepository accountRepository;
 	
 	@Autowired
-	CustomerReposistory customerReposistory;
+	CustomerRepository customerRepository;
 	
 	
 
-	public String makeTransaction(TransactionDto transactionDto,Account accountDetails) {
-		Transaction transaction;
-		String transactionStatus = null;
+	public Transaction makeTransaction(TransactionDto transactionDto,Account accountDetails) throws ResourceNotFoundException {
+		Transaction transaction = null;
 		
 		// deposit
 		if(transactionDto.getTransactionType().equalsIgnoreCase("CR")) {
@@ -44,18 +48,18 @@ public class TransactionService {
 			transaction.setTransactionDate(LocalDate.now());
 			transaction.setCustomerId(accountDetails.getCustomerId());
 			transaction.setBalance(updatedBalance);
+			transaction.setTransactionType("CR");
 			transactionRepository.save(transaction);
 			
 			accountDetails.setBalance(updatedBalance);
 			accountRepository.save(accountDetails);	
-			transactionStatus="Your transaction success : amount deposited";
 		}
 		// withdraw
 		if(transactionDto.getTransactionType().equalsIgnoreCase("DR")) {			
 		
 			if(accountDetails.getBalance()<transactionDto.getTransactionAount()) {
-					System.out.println("insufficient balance for withdraw");
-					transactionStatus="Sorry, You dont have insufficient balance for transaction";
+					log.debug("Sorry, Your dont have sufficient balance for transaction: For customer Id=" +accountDetails.getCustomerId());
+					throw new ResourceNotFoundException("Sorry, Your dont have sufficient balance for transaction!");
 				}else {
 					transaction=new Transaction();
 					BeanUtils.copyProperties(transactionDto, transaction);
@@ -63,35 +67,29 @@ public class TransactionService {
 					transaction.setTransactionDate(LocalDate.now());
 					transaction.setCustomerId(accountDetails.getCustomerId());
 					transaction.setBalance(updatedBalance);
+					transaction.setTransactionType("DR");
 					transactionRepository.save(transaction);
 					
 					accountDetails.setBalance(updatedBalance);
 					accountRepository.save(accountDetails);
-					transactionStatus="Your transaction success : amount credited";
-				}
-				
+				}			
 		}
 		
-		
-		
-		return transactionStatus;
-		
-		
+		return transaction;		
 	}
 
 	public Account validateCustomerDetails(Long custId) throws ResourceNotFoundException {
-		 Customer customer=customerReposistory.findById(custId).orElseThrow(()-> new ResourceNotFoundException("Please check customer id, provided customer id does not exist!!"));
+		 Customer customer=customerRepository.findById(custId).orElseThrow(()-> new ResourceNotFoundException("Please check customer id, provided customer id does not exist!!"));
 		 return accountRepository.findByCustomerId(customer);
 	}
 	
+
 	public TranjactionResponseDto getAllTransaction(long customerId,String fromDate,String toDate) throws ResourceNotFoundException{
-		Customer customerObject=customerReposistory.findById(customerId).orElseThrow(()->new ResourceNotFoundException("Customer not found"));
-		
-		List<Transaction> objTransactionList=transactionRepository.findByCustomerIdAndTransactionDateGreaterThanEqualAndTransactionDateLessThanEqual(customerObject, LocalDate.parse(fromDate), LocalDate.parse(toDate));
+		Customer customerObject=customerRepository.findById(customerId).orElseThrow(()->new ResourceNotFoundException("Customer not found"));	
+		List<Transaction> objTransactionList=transactionRepository.findByCustomerIdAndTransactionDateGreaterThanAndTransactionDateLessThan(customerObject, LocalDate.parse(fromDate), LocalDate.parse(toDate));
 		double credit=objTransactionList.stream().filter(e->e.getTransactionType().equals("Cr")).mapToDouble(e->e.getTransactionAount()).sum();
 		double debit=objTransactionList.stream().filter(e->e.getTransactionType().equals("Dr")).mapToDouble(e->e.getTransactionAount()).sum();
-		double totalBalance=validateCustomerDetails(customerId).getBalance();
-		
+		double totalBalance=validateCustomerDetails(customerId).getBalance();	
 		TranjactionResponseDto tranjactionResponseDto=new TranjactionResponseDto();
 		tranjactionResponseDto.setTransactionResult(objTransactionList);
 		tranjactionResponseDto.setTotalCredit(credit);
@@ -100,4 +98,10 @@ public class TransactionService {
 		
 		return tranjactionResponseDto;
 	}
+	
+	public List<Transaction> getTransactionHistoryByCustomerId(Long customerId) throws ResourceNotFoundException
+	{	
+		Customer customer = customerRepository.findById(customerId).orElseThrow(()-> new ResourceNotFoundException("resource not found"));
+		return transactionRepository.findTop10ByCustomerIdOrderByTransactionDateDesc(customer);
+		}
 }
