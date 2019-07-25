@@ -1,0 +1,39 @@
+package com.hcl.bankingApplication.entity;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import lombok.Data;
+
+@Entity
+@Table(name="account")
+@Data
+public class Account {
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name="account_number")
+	@JsonIgnore
+	private Long accountNumber;
+	
+	@OneToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name="custId")
+	private Customer custId;
+	
+	@JoinColumn(name="balance")
+	private Double balance;
+	
+	@Column(name="account_type")
+	private String accountType;
+	
+
+}
