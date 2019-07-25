@@ -45,7 +45,6 @@ myEmailService.sendOtpMessage("monikanidhisingh@gmail.com", "OTP -Banking Applic
 return  "Otp Generated Succesfully Please validate it.";
 }
 
-
 @RequestMapping(value ="/validateOtp", method = RequestMethod.GET)
 public @ResponseBody String validateOtp(@RequestParam("otpnum") int otpnum){
 final String SUCCESS = "Entered Otp is valid";
