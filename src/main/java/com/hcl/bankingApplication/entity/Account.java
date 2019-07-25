@@ -19,8 +19,14 @@ import lombok.Data;
 @Data
 public class Account {
 
+	
+    
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name="id")
+	@JsonIgnore
+	private long id;
+	
 	@Column(name="account_number")
 	@JsonIgnore
 	private Long accountNumber;
