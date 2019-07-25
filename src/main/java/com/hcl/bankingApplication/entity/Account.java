@@ -19,15 +19,21 @@ import lombok.Data;
 @Data
 public class Account {
 
+	
+    
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name="id")
+	@JsonIgnore
+	private long id;
+	
 	@Column(name="account_number")
 	@JsonIgnore
 	private Long accountNumber;
 	
 	@OneToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name="custId")
-	private Customer custId;
+	@JoinColumn(name="customer_id")
+	private Customer customerId;
 	
 	@JoinColumn(name="balance")
 	private Double balance;

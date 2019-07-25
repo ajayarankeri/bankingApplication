@@ -3,12 +3,15 @@ package com.hcl.bankingApplication.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.hcl.bankingApplication.dto.AccountTransactionDto;
+import com.hcl.bankingApplication.dto.TransactionDto;
+import com.hcl.bankingApplication.entity.Account;
 import com.hcl.bankingApplication.exception.ResourceNotFoundException;
 import com.hcl.bankingApplication.service.TransactionService;
 
@@ -24,4 +27,24 @@ public class AccountController {
 	{
 		return new ResponseEntity<>(transactionService.getAllTransaction(accountTransactionDto.getCustomerId(), accountTransactionDto.getFromDate(), accountTransactionDto.getToDate()),HttpStatus.OK);
 	}
+	
+	@PostMapping("/transaction")
+	public String makeTransaction(@RequestBody TransactionDto transaction) {
+		String transDetails=null;
+		Account accountDetails= transactionService.validateCustomerDetails(transaction.getCustomerId());
+		
+		
+		
+		if(ObjectUtils.isEmpty(accountDetails)) {
+			System.out.println("User Account is not created...");
+			
+		}else {
+			
+			transDetails=transactionService.makeTransaction(transaction,accountDetails);
+			
+		}
+		return transDetails;
+		
+	}
+
 }
