@@ -1,5 +1,7 @@
 package com.hcl.bankingApplication.controller;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,12 +31,11 @@ public class AccountController {
 	}
 	
 	@PostMapping("/transaction")
-	public String makeTransaction(@RequestBody TransactionDto transaction) {
+	public String makeTransaction(@Valid @RequestBody TransactionDto transaction) throws ResourceNotFoundException {
 		String transDetails=null;
 		Account accountDetails= transactionService.validateCustomerDetails(transaction.getCustomerId());
 		
-		
-		
+				
 		if(ObjectUtils.isEmpty(accountDetails)) {
 			System.out.println("User Account is not created...");
 			

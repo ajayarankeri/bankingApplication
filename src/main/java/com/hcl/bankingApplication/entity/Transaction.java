@@ -43,6 +43,9 @@ public class Transaction {
 	@Column(name="transaction_date")
 	private LocalDate transactionDate;
 	
+	@Column(name="balance")
+	private Double balance;
+	
 	
 
 }
