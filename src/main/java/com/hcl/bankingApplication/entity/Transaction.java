@@ -13,8 +13,8 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import lombok.Data;
+
 @Entity
 @Table(name="transaction")
 @Data
@@ -24,11 +24,11 @@ public class Transaction {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name="trans_id")
 	@JsonIgnore
-	private Long transId;
+	private Long transactionId;
 	
 	@OneToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name="custId")
-	private Customer custId;
+	@JoinColumn(name="customer_id")
+	private Customer customerId;
 	
 	@Column(name="description")
 	private String description;
@@ -37,10 +37,11 @@ public class Transaction {
 	private String transactionType;
 	
 	@Column(name="transaction_amount")
-	private String transactionAount;
+	private Double transactionAount;
+
 	
 	@Column(name="transaction_date")
-	private String transactionDate;
+	private LocalDate transactionDate;
 	
 	
 

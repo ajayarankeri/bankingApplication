@@ -32,8 +32,8 @@ public class Account {
 	private Long accountNumber;
 	
 	@OneToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name="custId")
-	private Customer custId;
+	@JoinColumn(name="customer_id")
+	private Customer customerId;
 	
 	@JoinColumn(name="balance")
 	private Double balance;
