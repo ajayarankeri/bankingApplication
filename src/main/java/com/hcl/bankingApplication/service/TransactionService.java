@@ -75,7 +75,6 @@ public class TransactionService {
 		return transactionStatus;
 		
 		
-		
 	}
 
 	public Account validateCustomerDetails(Long custId) throws ResourceNotFoundException {
