@@ -8,7 +8,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -21,9 +20,9 @@ public class Customer {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name="cust_id")
+	@Column(name="customer_id")
 	@JsonIgnore
-	private Long custId;	
+	private Long customerId;	
 	
 	@Column(name="full_name")
 	private String fullName;
@@ -34,8 +33,8 @@ public class Customer {
 	@Column(name="gender")
 	private String gender;
 	
-	@Column(name="mob_no")
-	private String mobNo;
+	@Column(name="mobile_no")
+	private String mobileNo;
 	
 	@Column(name="email")
 	private String email;

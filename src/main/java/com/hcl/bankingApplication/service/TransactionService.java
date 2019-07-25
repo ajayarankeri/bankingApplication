@@ -14,9 +14,21 @@ import com.hcl.bankingApplication.repository.AccountRepository;
 import com.hcl.bankingApplication.repository.CustomerReposistory;
 import com.hcl.bankingApplication.repository.TransactionRepository;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Service;
+
+import com.hcl.bankingApplication.repository.CustomerRepository;
+import com.hcl.bankingApplication.repository.TransactionRepository;
+import com.hcl.bankingApplication.entity.Customer;
+import com.hcl.bankingApplication.entity.Transaction;
+import com.hcl.bankingApplication.exception.ResourceNotFoundException;
+
+
 @Service
 public class TransactionService {
-	
 	@Autowired
 	TransactionRepository transactionRepository;
 	
@@ -38,7 +50,7 @@ public class TransactionService {
 			transaction=new Transaction();
 			BeanUtils.copyProperties(transactionDto, transaction);
 			transaction.setTransactionDate(LocalDate.now());
-			transaction.setCustId(accountDetails.getCustId());
+			transaction.setCustomerId(accountDetails.getCustomerId());
 			transactionRepository.save(transaction);
 			
 			accountDetails.setBalance(accountDetails.getBalance()+transactionDto.getTransactionAount());
@@ -55,7 +67,7 @@ public class TransactionService {
 					transaction=new Transaction();
 					BeanUtils.copyProperties(transactionDto, transaction);
 					transaction.setTransactionDate(LocalDate.now());
-					transaction.setCustId(accountDetails.getCustId());
+					transaction.setCustomerId(accountDetails.getCustomerId());
 					transactionRepository.save(transaction);
 					
 					accountDetails.setBalance(accountDetails.getBalance()-transactionDto.getTransactionAount());
@@ -74,8 +86,12 @@ public class TransactionService {
 	}
 
 	public Account validateCustomerDetails(Long custId) {
-		 Customer customer=customerReposistory.findByCustId(custId);
-		 return accountRepository.findByCustId(customer);
+		 Customer customer=customerReposistory.findByCustomerId(custId);
+		 return accountRepository.findByCustomerId(customer);
 	}
-
+	
+	public List<Transaction> getAllTransaction(long customerId,String fromDate,String toDate) throws ResourceNotFoundException{
+		Customer customerObject=customerReposistory.findById(customerId).orElseThrow(()->new ResourceNotFoundException("Customer not found"));	
+		return transactionRepository.findByCustomerIdAndTransactionDateGreaterThanAndTransactionDateLessThan(customerObject, LocalDate.parse(fromDate), LocalDate.parse(toDate));
+	}
 }

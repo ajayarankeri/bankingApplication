@@ -7,6 +7,6 @@ import com.hcl.bankingApplication.entity.Customer;
 
 public interface AccountRepository extends JpaRepository<Account, Long>{
 
-	Account findByCustId(Customer customer);
+	Account findByCustomerId(Customer customer);
 
 }
