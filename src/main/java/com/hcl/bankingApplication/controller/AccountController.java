@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.ObjectUtils;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,6 +22,7 @@ import com.hcl.bankingApplication.entity.Transaction;
 import com.hcl.bankingApplication.exception.ResourceNotFoundException;
 import com.hcl.bankingApplication.service.TransactionService;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/account")
 public class AccountController {

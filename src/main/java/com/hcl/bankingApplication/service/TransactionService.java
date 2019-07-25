@@ -89,7 +89,6 @@ public class TransactionService {
 	
 	public List<Transaction> getTransactionHistoryByCustomerId(Long customerId) throws ResourceNotFoundException
 	{	
-		
 		Customer customer = customerRepository.findById(customerId).orElseThrow(()-> new ResourceNotFoundException("resource not found"));
 		return transactionRepository.findTop10ByCustomerIdOrderByTransactionDateDesc(customer);
 	
