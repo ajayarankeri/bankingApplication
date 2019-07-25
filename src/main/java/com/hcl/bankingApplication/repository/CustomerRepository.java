@@ -11,5 +11,7 @@ import com.hcl.bankingApplication.entity.Customer;
 @Repository
 public interface CustomerRepository extends JpaRepository<Customer, Long>{
 
+	public Customer findByCustomerId(Long customerId);
 
+	
 }
