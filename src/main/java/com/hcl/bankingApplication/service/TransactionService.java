@@ -13,7 +13,7 @@ import com.hcl.bankingApplication.entity.Customer;
 import com.hcl.bankingApplication.entity.Transaction;
 import com.hcl.bankingApplication.exception.ResourceNotFoundException;
 import com.hcl.bankingApplication.repository.AccountRepository;
-import com.hcl.bankingApplication.repository.CustomerReposistory;
+import com.hcl.bankingApplication.repository.CustomerRepository;
 import com.hcl.bankingApplication.repository.TransactionRepository;
 
 
@@ -26,7 +26,7 @@ public class TransactionService {
 	AccountRepository accountRepository;
 	
 	@Autowired
-	CustomerReposistory customerReposistory;
+	CustomerRepository customerRepository;
 	
 	
 
@@ -78,12 +78,20 @@ public class TransactionService {
 	}
 
 	public Account validateCustomerDetails(Long custId) throws ResourceNotFoundException {
-		 Customer customer=customerReposistory.findById(custId).orElseThrow(()-> new ResourceNotFoundException("Please check customer id, provided customer id does not exist!!"));
+		 Customer customer=customerRepository.findById(custId).orElseThrow(()-> new ResourceNotFoundException("Please check customer id, provided customer id does not exist!!"));
 		 return accountRepository.findByCustomerId(customer);
 	}
 	
 	public List<Transaction> getAllTransaction(long customerId,String fromDate,String toDate) throws ResourceNotFoundException{
-		Customer customerObject=customerReposistory.findById(customerId).orElseThrow(()->new ResourceNotFoundException("Customer not found"));	
+		Customer customerObject=customerRepository.findById(customerId).orElseThrow(()->new ResourceNotFoundException("Customer not found"));	
 		return transactionRepository.findByCustomerIdAndTransactionDateGreaterThanAndTransactionDateLessThan(customerObject, LocalDate.parse(fromDate), LocalDate.parse(toDate));
+	}
+	
+	public List<Transaction> getTransactionHistoryByCustomerId(Long customerId) throws ResourceNotFoundException
+	{	
+		
+		Customer customer = customerRepository.findById(customerId).orElseThrow(()-> new ResourceNotFoundException("resource not found"));
+		return transactionRepository.findTop10ByCustomerIdOrderByTransactionDateDesc(customer);
+	
 	}
 }

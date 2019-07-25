@@ -10,4 +10,7 @@ import com.hcl.bankingApplication.entity.Transaction;
 @Repository
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
 	public List<Transaction> findByCustomerIdAndTransactionDateGreaterThanAndTransactionDateLessThan(Customer customer,LocalDate fromDate,LocalDate toDate);
+	
+	public List<Transaction> findTop10ByCustomerIdOrderByTransactionDateDesc(Customer customer);
+
 }
