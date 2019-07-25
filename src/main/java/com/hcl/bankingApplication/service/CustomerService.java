@@ -36,12 +36,12 @@ public class CustomerService {
 		int number=(int)((Math.random()*9000000)+1000000);
 		//double d = Double.parseDouble(number);
 		
-		account.setCustId(customerObj);
+		account.setCustomerId(customerObj);
 		account.setAccountNumber(Long.valueOf(number));
 		account.setAccountType("Saving");
 		account.setBalance(Double.valueOf(20000));
 		accountRepository.save(account);
-		return  customerObj.getCustId();
+		return  customerObj.getCustomerId();
 	}
 	
 	
