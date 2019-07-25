@@ -7,15 +7,12 @@ import org.springframework.stereotype.Repository;
 
 
 import com.hcl.bankingApplication.entity.Account;
+import com.hcl.bankingApplication.entity.Customer;
 
 
 
 @Repository
 public interface AccountRepository  extends JpaRepository<Account, Long>{
-
-
-
-	//Account findByCustomerId(Customer customer);
-
+	Account findByCustomerId(Customer customer);
 
 }
