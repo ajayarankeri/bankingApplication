@@ -4,6 +4,8 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +28,9 @@ import com.hcl.bankingApplication.service.TransactionService;
 @RestController
 @RequestMapping("/account")
 public class AccountController {
- 
+	
+	static Logger log = LoggerFactory.getLogger(AccountController.class);
+	
 	@Autowired
 	 TransactionService transactionService;
 	
@@ -43,12 +47,14 @@ public class AccountController {
 		
 				
 		if(ObjectUtils.isEmpty(accountDetails)) {
+			log.debug("User Account is not created");
 			throw new ResourceNotFoundException("User Account is not created");			
 		}else if((transaction.getTransactionType().equalsIgnoreCase("CR")) ||(transaction.getTransactionType().equalsIgnoreCase("DR"))){
 			
 			transDetails=transactionService.makeTransaction(transaction,accountDetails);
 			
 		}else {
+			log.debug("Please enter correct transaction type i.e. CR or DR");
 			throw new ResourceNotFoundException("Please enter correct transaction type i.e. CR or DR");
 		}
 		
@@ -64,6 +70,7 @@ public class AccountController {
 			lastTenTransaction = transactionService.getTransactionHistoryByCustomerId(customerId);
 		}
 		else {
+			log.debug("Not a valid customer Id");
 			throw new ResourceNotFoundException("Not a valid customer Id");
 		}
 		return new ResponseEntity<List<Transaction>>(lastTenTransaction,HttpStatus.OK);

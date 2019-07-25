@@ -3,6 +3,8 @@ package com.hcl.bankingApplication.service;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,6 +21,9 @@ import com.hcl.bankingApplication.repository.TransactionRepository;
 
 @Service
 public class TransactionService {
+	
+	static Logger log = LoggerFactory.getLogger(TransactionService.class);
+	
 	@Autowired
 	TransactionRepository transactionRepository;
 	
@@ -51,6 +56,7 @@ public class TransactionService {
 		if(transactionDto.getTransactionType().equalsIgnoreCase("DR")) {			
 		
 			if(accountDetails.getBalance()<transactionDto.getTransactionAount()) {
+					log.debug("Sorry, Your dont have sufficient balance for transaction: For customer Id=" +accountDetails.getCustomerId());
 					throw new ResourceNotFoundException("Sorry, Your dont have sufficient balance for transaction!");
 				}else {
 					transaction=new Transaction();
@@ -64,15 +70,10 @@ public class TransactionService {
 					
 					accountDetails.setBalance(updatedBalance);
 					accountRepository.save(accountDetails);
-				}
-				
+				}			
 		}
 		
-		
-		
-		return transaction;
-		
-		
+		return transaction;		
 	}
 
 	public Account validateCustomerDetails(Long custId) throws ResourceNotFoundException {
