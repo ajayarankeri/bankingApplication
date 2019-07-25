@@ -37,7 +37,8 @@ public class Transaction {
 	private String transactionType;
 	
 	@Column(name="transaction_amount")
-	private double transactionAmount;
+	private Double transactionAount;
+
 	
 	@Column(name="transaction_date")
 	private LocalDate transactionDate;
