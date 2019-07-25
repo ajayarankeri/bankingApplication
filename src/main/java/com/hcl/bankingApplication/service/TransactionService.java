@@ -75,7 +75,6 @@ public class TransactionService {
 		return transactionStatus;
 		
 		
-		
 	}
 
 	public Account validateCustomerDetails(Long custId) throws ResourceNotFoundException {
@@ -84,7 +83,7 @@ public class TransactionService {
 	}
 	
 	public List<Transaction> getAllTransaction(long customerId,String fromDate,String toDate) throws ResourceNotFoundException{
-		Customer customerObject=customerReposistory.findById(customerId).orElseThrow(()->new ResourceNotFoundException("Customer not found"));	
-		return transactionRepository.findByCustomerIdAndTransactionDateGreaterThanAndTransactionDateLessThan(customerObject, LocalDate.parse(fromDate), LocalDate.parse(toDate));
+		Customer customerObject=customerReposistory.findById(customerId).orElseThrow(()->new ResourceNotFoundException("Customer not found"));
+		return transactionRepository.findByCustomerIdAndTransactionDateGreaterThanEqualAndTransactionDateLessThanEqual(customerObject, LocalDate.parse(fromDate), LocalDate.parse(toDate));
 	}
 }
