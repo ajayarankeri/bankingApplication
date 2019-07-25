@@ -2,11 +2,13 @@ package com.hcl.bankingApplication.service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.hcl.bankingApplication.dto.TranjactionResponseDto;
 import com.hcl.bankingApplication.dto.TransactionDto;
 import com.hcl.bankingApplication.entity.Account;
 import com.hcl.bankingApplication.entity.Customer;
@@ -82,8 +84,20 @@ public class TransactionService {
 		 return accountRepository.findByCustomerId(customer);
 	}
 	
-	public List<Transaction> getAllTransaction(long customerId,String fromDate,String toDate) throws ResourceNotFoundException{
+	public TranjactionResponseDto getAllTransaction(long customerId,String fromDate,String toDate) throws ResourceNotFoundException{
 		Customer customerObject=customerReposistory.findById(customerId).orElseThrow(()->new ResourceNotFoundException("Customer not found"));
-		return transactionRepository.findByCustomerIdAndTransactionDateGreaterThanEqualAndTransactionDateLessThanEqual(customerObject, LocalDate.parse(fromDate), LocalDate.parse(toDate));
+		
+		List<Transaction> objTransactionList=transactionRepository.findByCustomerIdAndTransactionDateGreaterThanEqualAndTransactionDateLessThanEqual(customerObject, LocalDate.parse(fromDate), LocalDate.parse(toDate));
+		double credit=objTransactionList.stream().filter(e->e.getTransactionType().equals("Cr")).mapToDouble(e->e.getTransactionAount()).sum();
+		double debit=objTransactionList.stream().filter(e->e.getTransactionType().equals("Dr")).mapToDouble(e->e.getTransactionAount()).sum();
+		double totalBalance=validateCustomerDetails(customerId).getBalance();
+		
+		TranjactionResponseDto tranjactionResponseDto=new TranjactionResponseDto();
+		tranjactionResponseDto.setTransactionResult(objTransactionList);
+		tranjactionResponseDto.setTotalCredit(credit);
+		tranjactionResponseDto.setTotalDebit(debit);
+		tranjactionResponseDto.setTotalBalance(totalBalance);
+		
+		return tranjactionResponseDto;
 	}
 }
