@@ -83,7 +83,6 @@ public class TransactionServiceTest {
 	
 	@Test
 	public void TransactionlistTest() throws ResourceNotFoundException {
-	
 	   Mockito.when(customerRepository.findById(1l)).thenReturn(Optional.of(customer));
 	   Mockito.when(transactionRepository.findByCustomerIdAndTransactionDateGreaterThanAndTransactionDateLessThan(customer, LocalDate.parse("2019-07-23"), LocalDate.parse("2019-07-30"))).thenReturn(transactionList);
 	   Mockito.when(accountRepository.findByCustomerId(customer)).thenReturn(account);
