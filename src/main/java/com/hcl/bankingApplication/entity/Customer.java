@@ -21,27 +21,30 @@ public class Customer {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name="customer_id")
-	@JsonIgnore
 	private Long customerId;	
 	
 	@Column(name="full_name")
+	@JsonIgnore
 	private String fullName;
 	
 	@Column(name="birth_date")
+	@JsonIgnore
 	private LocalDate birthDate;
 	
 	@Column(name="gender")
+	@JsonIgnore
 	private String gender;
 	
 	@Column(name="mobile_no")
+	@JsonIgnore
 	private String mobileNo;
 	
 	@Column(name="email")
+	@JsonIgnore
 	private String email;
 	
 	@Column(name="address")
+	@JsonIgnore
 	private String address;
 	
-	
-
 }
